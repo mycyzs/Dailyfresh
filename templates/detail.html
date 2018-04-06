@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    天天生鲜-商品详情
+{% endblock %}
+{% block body %}
+
+
+    <div class="navbar_con">
+        <div class="navbar clearfix">
+            <div class="subnav_con fl">
+                <h1>全部商品分类</h1>
+                <span></span>
+                <ul class="subnav">
+                    {% for category in categories %}
+                        <li><a href="{% url 'goods:list' category.id 1 %}"
+                               class="{{ category.logo }}">{{ category.name }}</a></li>
+
+                    {% endfor %}
+
+
+                </ul>
+            </div>
+            <ul class="navlist fl">
+                <li><a href="{% url 'goods:index' %}">首页</a></li>
+                <li class="interval">|</li>
+                <li><a href="">手机生鲜</a></li>
+                <li class="interval">|</li>
+                <li><a href="">抽奖</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        <a href="#">全部分类</a>
+        <span>></span>
+        <a href="#">新鲜水果</a>
+        <span>></span>
+        <a href="#">商品详情</a>
+    </div>
+
+    <div class="goods_detail_con clearfix">
+        <div class="goods_detail_pic fl"><img src="{{ sku.default_image.url }}"></div>
+
+        <div class="goods_detail_list fr">
+            <h3>{{ sku.name }}</h3>
+            <p>草莓浆果柔软多汁，味美爽口，适合速冻保鲜贮藏。草莓速冻后，可以保持原有的色、香、味，既便于贮藏，又便于外销。</p>
+            <div class="prize_bar">
+                <span class="show_pirze">¥<em>{{ sku.price }}</em></span>
+                <span class="show_unit">单  位：{{ sku.unit }}</span>
+            </div>
+            {#   显示其他规格商品#}
+            {% if other_sku %}
+
+
+                <div>
+                    <div>其他规格：</div>
+                    <ul>
+                        {% for foo in other_sku %}
+
+
+                            <li>
+                                <a href="{% url 'goods:detail' foo.id %}">{{ foo.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="goods_num clearfix">
+                <div class="num_name fl">数 量：</div>
+                <div class="num_add fl">
+                    <input type="text" class="num_show fl" value="1">
+                    <a href="javascript:;" class="add fr">+</a>
+                    <a href="javascript:;" class="minus fr">-</a>
+                </div>
+            </div>
+            <div class="total">总价：<em>16.80元</em></div>
+            <div class="operate_btn">
+                <a href="javascript:;" class="buy_btn">立即购买</a>
+                <a href="javascript:;" class="add_cart" id="add_cart" sku_id="{{ sku.id }}">加入购物车</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main_wrap clearfix">
+        <div class="l_wrap fl clearfix">
+            <div class="new_goods">
+                <h3>新品推荐</h3>
+                <ul>
+                    {% for new_sku in new_skus %}
+                        <li>
+                            <a href="{% url 'goods:detail' new_sku.id %}"><img
+                                    src="{{ new_sku.default_image.url }}"></a>
+                            <h4><a href="#">{{ new_sku.name }}</a></h4>
+                            <div class="prize">￥{{ new_sku.price }}</div>
+                        </li>
+
+                    {% endfor %}
+
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="r_wrap fr clearfix">
+            <ul class="detail_tab clearfix">
+                <li class="active">商品介绍</li>
+                <li>评论</li>
+            </ul>
+
+            <div class="tab_content">
+                <dl>
+                    <dt>商品详情：</dt>
+                    {#防转意#}
+                    <dd>
+                        {{ sku.spu.desc|safe }}
+                    </dd>
+                </dl>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom_js %}
+
+    {% csrf_token %}
+
+    <script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script type="text/javascript">
+
+        update_goods_count();
+
+        function update_goods_count() {
+
+            {#更新价格#}
+            var prize = $('.show_pirze').children('em').text();
+            var num = $('.num_show').val();
+
+            prize = parseFloat(prize);
+            num = parseInt(num);
+
+            var total = prize * num;
+            $('.total').children('em').text(total.toFixed(2) + '元');
+
+        }
+        {# 实现数量加减，思想是把数据拿出来进行加减，再放进去#}
+
+        $('.add').click(function () {
+            var num = $('.num_show').val();
+
+            num = parseInt(num);
+            num += 1;
+            $('.num_show').val(num);
+
+            update_goods_count();
+
+        })
+
+        $('.minus').click(function () {
+            var num = $('.num_show').val();
+            num = parseInt(num);
+            if (num > 1) {
+                num -= 1;
+                $('.num_show').val(num);
+                update_goods_count();
+
+            }
+        });
+        {#手动输入数量，失去点击事件#}
+        $('.num_show').blur(function () {
+            var num = $(this).val();
+            {#判断输入数据的合法性#}
+            if (isNaN(num) || num.trim().length < 1 || parseInt(num) < 1) {
+                num = 1;
+            }
+            $('.num_show').val(parseInt(num));
+            update_goods_count()
+
+        });
+
+
+        {#实时更新购物车商品数量，点击加入购物车，获取商品的id#}
+        {#<a id="add_cart" ... sku_id="{{ sku.id }}">加入购物车</a>#}
+        {#  点击按键，即刻发起post请求，带上参数#}
+        // todo: 添加商品到购物车时的动画效果
+        // 动画平移的开始位置
+        var $add_x = $('#add_cart').offset().top;
+        var $add_y = $('#add_cart').offset().left;
+
+        // 动画平移的结束位置
+        var $to_x = $('#show_count').offset().top;
+        var $to_y = $('#show_count').offset().left;
+        $('#add_cart').click(function () {
+
+            $(".add_jump").css({'left': $add_y + 80, 'top': $add_x + 10, 'display': 'block'});
+            var sku_id = $(this).attr('sku_id');
+            var num = $('.num_show').val();
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+
+            {#  请求的参数#}
+            var paras = {
+                'sku_id': sku_id,
+                'num': num,
+                'csrfmiddlewaretoken': token,
+            };
+
+            {#  发起请求#}
+            $.post('/cart/add', paras, function (result) {
+                {#result是返回的data#}
+                if (result.code == 0) {
+                    $('.goods_count').html(result.count);
+
+
+                } else {
+                    alert(result.errmsg)
+                }
+
+
+            })
+
+
+        });
+
+
+    </script>
+
+
+{% endblock %}
+	

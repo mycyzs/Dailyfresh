@@ -1,0 +1,159 @@
+{% extends 'base_user_center.html' %}
+
+{% block right_body %}
+    <div class="right_content clearfix">
+        <h3 class="{% url 'users:order' 1 %}">全部订单</h3>
+
+
+        {% for order in page %}
+
+
+
+
+            <ul class="order_list_th w978 clearfix">
+                <li class="col01">{{ order.create_time }}</li>
+                <li class="col02">订单号：{{ order.order_id }}</li>
+                <li class="col02 stress">{{ order.status_desc }}</li>
+            </ul>
+            <table class="order_list_table w980">
+                <tbody>
+                <tr>
+                    <td width="55%">
+
+                        {% for order_sku in order.skus %}
+
+                            <ul class="order_goods_list clearfix">
+                                <li class="col01"><img src="{{ order_sku.sku.default_image.url }}"></li>
+                                <li class="col02">{{ order_sku.sku.name }}<em>{{ order_sku.price }}/{{ order_sku.sku.unit }}</em>
+                                </li>
+                                <li class="col03">{{ order_sku.count }}</li>
+                                <li class="col04">{{ order_sku.amount }}元</li>
+                            </ul>
+
+                        {% endfor %}
+
+                    </td>
+                    <td width="15%">{{ order.total_pay }}元</td>
+                    <td width="15%">{{ order.status_desc }}</td>
+                    <td width="15%"><a href="#" class="oper_btn" order_id="{{ order.order_id }}"
+                                       order_status="{{ order.status }}">
+                        去付款</a></td>
+                </tr>
+                </tbody>
+            </table>
+
+        {% endfor %}
+
+
+
+
+        <div class="pagenation">
+
+            {% if page.has_previous %}
+                <a href="{% url 'users:order' page.previous_page_number %}">
+                    <上一页
+                </a>
+
+            {% endif %}
+
+            {% for number in page_range %}
+                {% if number == page.number %}
+                    <a href="#" class="active">{{ number }}</a>
+                {% else %}
+                    <a href="{% url 'users:order' number %}">{{ number }}</a>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            {% if page.has_next %}
+                <a href="{% url 'users:order' page.next_page_number %}">
+                    下一页>
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom_js %}
+    {% load staticfiles %}
+    {% csrf_token %}
+
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+
+        var status = $('.oper_btn').attr('order_status')
+        //获取订单的状态
+        if (status == 1) {
+            $('.oper_btn').text('去付款')
+        } else if (status == 4) {
+            $('.oper_btn').text('去评论')
+
+        } else if (status == 5) {
+            $('.oper_btn').text('已完成')
+        }
+
+
+        //点击去付款
+        $('.oper_btn').click(function () {
+            var status = $(this).attr('order_status')
+            var order_id = $(this).attr('order_id')
+            var token = $('input[name="csrfmiddlewaretoken"]').val()
+
+            //alert(status+'  '+order_id)
+            //如果订单状态=1（待支付）才需要调用支付宝支付
+            if (status == 1) {
+
+                paras = {
+                    'order_id': order_id,
+                    'csrfmiddlewaretoken': token,
+                }
+
+                //ajax发起post请求
+                $.post('/orders/lastpay', paras, function (result) {
+
+
+                    if (result.code == 0) {
+                        //响应成功，打开支付页面
+                        //输入支付宝帐号密码进行支付
+                        window.open(result.pay_url);
+
+
+                        //查询支付结果
+                        $.post('/orders/check', paras, function (result) {
+
+                            if (result.code == 0) {
+                                //支付成功
+                                alert('支付成功')
+                                //重新加载页面
+                                window.location.reload()
+                            } else {
+                                alert(result.errmsg)
+                            }
+
+                        })
+
+
+                    } else {
+                        alert(result.errmsg)
+                    }
+
+                })
+
+            }
+
+
+        })
+
+
+    </script>
+
+
+
+
+
+{% endblock %}
+
+

@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+    天天生鲜-提交订单
+{% endblock %}
+
+{% block search_bar %}
+    <div class="search_bar clearfix">
+        <a href="{% url 'goods:index' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
+        <div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;提交订单</div>
+        <div class="search_con fr">
+            <input type="text" class="input_text fl" name="" placeholder="搜索商品">
+            <input type="button" class="input_btn fr" name="" value="搜索">
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block body %}
+
+
+
+    <h3 class="common_title">确认收货地址</h3>
+
+    <div class="common_list_con clearfix">
+        <dl>
+            <dt>寄送到：</dt>
+            {% if address %}
+                <dd><input type="radio" name="address_id" value="{{ address.id }}" checked="">{{ address.detail_addr }}
+                    （{{ address.receiver_name }} 收） {{ address.receiver_mobile }}</dd>
+            {% else %}
+                <dd>无收货地址</dd>
+            {% endif %}
+
+        </dl>
+        <a href="{% url 'users:address' %}" class="edit_site">编辑收货地址</a>
+
+    </div>
+
+    <h3 class="common_title">支付方式</h3>
+    <div class="common_list_con clearfix">
+        <div class="pay_style_con clearfix">
+            <input type="radio" name="pay_style" value="1">
+            <label class="cash">货到付款</label>
+            <input type="radio" name="pay_style" value="2">
+            <label class="weixin">微信支付</label>
+            <input type="radio" name="pay_style" value="3" checked>
+            <label class="zhifubao">支付宝</label>
+            <input type="radio" name="pay_style" value="4">
+            <label class="bank">银行卡支付</label>
+        </div>
+    </div>
+
+    <h3 class="common_title">商品列表</h3>
+
+    <div class="common_list_con clearfix">
+        <ul class="goods_list_th clearfix">
+            <li class="col01">商品名称</li>
+            <li class="col02">商品单位</li>
+            <li class="col03">商品价格</li>
+            <li class="col04">数量</li>
+            <li class="col05">小计</li>
+        </ul>
+        {% for sku in skus %}
+            <ul class="goods_list_td clearfix">
+                <li class="col01">1</li>
+                <li class="col02"><img src="{{ sku.default_image.url }}"></li>
+                <li class="col03">{{ sku.name }}</li>
+                <li class="col04">{{ sku.unit }}</li>
+                <li class="col05">{{ sku.price }}</li>
+                <li class="col06">{{ sku.num }}</li>
+                <li class="col07">{{ sku.amount }}</li>
+            </ul>
+
+        {% endfor %}
+
+
+    </div>
+
+    <h3 class="common_title">总金额结算</h3>
+
+    <div class="common_list_con clearfix">
+        <div class="settle_con">
+            <div class="total_goods_count">共<em>{{ total_num }}</em>件商品，总金额<b>{{ total_amount }}元</b></div>
+            <div class="transit">运费：<b>{{ trans_cost }}元</b></div>
+            <div class="total_pay">实付款：<b>{{ total_money }}元</b></div>
+        </div>
+    </div>
+
+    <div class="order_submit clearfix">
+        <a href="javascript:;" id="order_btn" sku_ids_str="{{ sku_ids_str }}">提交订单</a>
+    </div>
+{% endblock %}
+
+
+
+{% block bottom_js %}
+
+    <div class="popup_con">
+        <div class="popup">
+            <p>订单提交成功！</p>
+        </div>
+
+        <div class="mask"></div>
+    </div>
+    {% csrf_token %}
+    {% load staticfiles %}
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+        //创建提交订单点击事件
+        $('#order_btn').click(function () {
+            //获取参数，可以给标签定属性或者命名
+            var sku_ids_str = $(this).attr('sku_ids_str')
+            var address_id = $('input[name="address_id"]').val()
+            var pay_method = $('input[name="pay_style"]:checked').val()
+            var token = $('input[name="csrfmiddlewaretoken"]').val()
+
+            // alert(token)
+            //定义参数
+            paras = {
+                'sku_ids_str': sku_ids_str,
+                'address_id': address_id,
+                'pay_method': pay_method,
+                'csrfmiddlewaretoken': token,
+            };
+
+            //通过ajax发起post请求
+            $.post('/orders/commit', paras, function (result) {
+                if (result.code == 0) {//响应成功
+                    // 显示订单创建成功的提示框
+                    $('.popup_con').fadeIn('fast', function () {
+                        setTimeout(function () {
+                            // 3秒后隐藏提示框
+                            $('.popup_con').fadeOut('fast', function () {
+                                // 跳转到用户中心订单列表界面
+                                window.location.href = '/users/orders';
+                            });
+                        }, 3000)
+                    });
+                    //跳转到我的订单界面
+                    window.location.href = '/users/order/1'
+                } else {
+                    alert(result.errmsg)
+                }
+
+            })
+
+        })
+
+
+    </script>
+
+
+{% endblock %}

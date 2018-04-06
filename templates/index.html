@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block title %}
+    天天生鲜-首页
+{% endblock %}
+{% block top_js %}
+    <script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slide.js' %}"></script>
+{% endblock %}
+
+
+
+{% block body %}
+    <div class="navbar_con">
+        <div class="navbar">
+            <h1 class="fl">全部商品分类</h1>
+            <ul class="navlist fl">
+                <li><a href="{% url 'goods:index' %}">首页</a></li>
+                <li class="interval">|</li>
+                <li><a href="">手机生鲜</a></li>
+                <li class="interval">|</li>
+                <li><a href="">抽奖</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="center_con clearfix">
+        {# 商品类别  #}
+        <ul class="subnav fl">
+
+            {% for catogary in catogarys %}
+                <li><a href="{% url 'goods:list' catogary.id 1 %}#model0{{ forloop.counter }}"
+                       class="{{ catogary.logo }}">{{ catogary.name }}</a></li>
+
+            {% endfor %}
+
+
+        </ul>
+        {# 商品轮播图  #}
+        <div class="slide fl">
+            <ul class="slide_pics">
+                {#  创建点击图片跳转商品详情#}
+                {% for slide_sku in slide_skus %}
+                    <li>
+                        <a href="{% url 'goods:detail' slide_sku.sku.id %}">
+                            <img src="{{ slide_sku.image.url }}" alt="幻灯片"></a>
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+            <div class="prev"></div>
+            <div class="next"></div>
+            <ul class="points"></ul>
+        </div>
+        {# 商品促销活动 #}
+        <div class="adv fl">
+            {% for promot in promots %}
+                <a href="#"><img src="{{ promot.image.url }}"></a>
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+    {% for catogary in catogarys %}
+        <div class="list_model">
+            <div class="list_title clearfix">
+                <h3 class="fl" id="model01">{{ catogary.name }}</h3>
+                <div class="subtitle fl">
+                    <span>|</span>
+
+                    {# 一个文字商品 #}
+                    {% for cats in catogary.text_type %}
+                        <a href="{% url 'goods:detail' cats.sku.id %}">{{ cats.sku.name }}</a>
+
+                    {% endfor %}
+
+
+                </div>
+                <a href="{% url 'goods:list' catogary.id 1 %}" class="goods_more fr" id="fruit_more">查看更多 ></a>
+            </div>
+
+            <div class="goods_con clearfix">
+                <div class="goods_banner fl"><img src="{{ catogary.image.url }}"></div>
+                <ul class="goods_list fl">
+
+                    {# 一个图片商品 #}
+                    {% for phos in catogary.photo_type %}
+                        <li>
+                            <h4><a href="{% url 'goods:detail' phos.sku.id %}">{{ phos.sku.name }}</a></h4>
+                            <a href="{% url 'goods:detail' phos.sku.id %}"><img src="{{ phos.sku.default_image.url }}"></a>
+                            <div class="prize">¥ {{ phos.sku.price }}</div>
+                        </li>
+
+                    {% endfor %}
+
+
+                </ul>
+            </div>
+        </div>
+
+    {% endfor %}
+
+
+
+{% endblock %}
+
+
+
+
+
+
+{% block bottom_js %}
+
+    <script type="text/javascript" src="js/slideshow.js"></script>
+    <script type="text/javascript">
+        BCSlideshow('focuspic');
+        var oFruit = document.getElementById('fruit_more');
+        var oShownum = document.getElementById('show_count');
+
+        var hasorder = localStorage.getItem('order_finish');
+
+        if (hasorder) {
+            oShownum.innerHTML = '2';
+        }
+
+        oFruit.onclick = function () {
+            window.location.href = 'list.html';
+        }
+    </script>
+{% endblock %}
+</body>
+</html>
