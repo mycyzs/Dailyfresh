@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '*z6w35u#&1yj$_q&-9cz$l*1q+tkjm9z!vpzc@l6)j=sj_#=we'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -162,3 +162,5 @@ CACHES = {
         }
     }
 }
+
+STATIC_ROOT = '/home/python/Desktop/static'

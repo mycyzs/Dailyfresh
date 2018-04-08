@@ -341,16 +341,20 @@ class OrderCheckView(View):
                     "total_amount": "20.00"
                 }
                 '''
+        print('33333333333')
 
         # 判断订单是否支付成功
         while(True):
             response = alipay.api_alipay_trade_query(out_trade_no=order_id)
             # 获取响应参数
+            print(response)
+
             code = response.get('code')  #响应状态吗
 
             trade_no = response.get('trade_no')  #交易好
 
             trade_status = response.get('trade_status')   #订单支付状态
+
 
             if code == '10000' and trade_status == 'TRADE_SUCCESS':
                 print('888888888888888888')
