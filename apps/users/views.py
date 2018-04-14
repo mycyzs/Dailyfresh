@@ -130,8 +130,8 @@ class LoginView(View):
 
         login(request, user)
         # 通过django提供的login方法，保存登陆用户状态（底层是使用session保存数据）
-
-        # 用户是否勾选
+        #内置方法保存用户的信息，session键值对数据
+        # 用户是否勾选,set_expiry可以设置session数据的过期时间
         if remember != 'on':
             request.session.set_expiry(0)
 

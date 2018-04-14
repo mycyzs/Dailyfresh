@@ -1,0 +1,34 @@
+*** Starting uWSGI 2.0.17 (64bit) on [Sat Apr 14 14:31:40 2018] ***
+compiled with version: 5.4.0 20160609 on 06 April 2018 05:29:10
+os: Linux-4.4.0-31-generic #50-Ubuntu SMP Wed Jul 13 00:07:12 UTC 2016
+nodename: ubuntu
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 2
+current working directory: /home/python/study/dailyfresh
+writing pidfile to uwsgi2.pid
+detected binary path: /home/python/.virtualenvs/django_py3/bin/uwsgi
+chdir() to /home/python/study/dailyfresh
+your processes number limit is 11807
+your memory page size is 4096 bytes
+detected max file descriptor number: 1048576
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:8081 fd 3
+Python version: 3.5.2 (default, Nov 23 2017, 16:37:01)  [GCC 5.4.0 20160609]
+Set PythonHome to /home/python/.virtualenvs/django_py3
+Python main interpreter initialized at 0x1f1e570
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 416880 bytes (407 KB) for 8 cores
+*** Operational MODE: preforking+threaded ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x1f1e570 pid: 7079 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 7079)
+spawned uWSGI worker 1 (pid: 7092, cores: 2)
+spawned uWSGI worker 2 (pid: 7093, cores: 2)
+spawned uWSGI worker 3 (pid: 7094, cores: 2)
+spawned uWSGI worker 4 (pid: 7096, cores: 2)
+[pid: 7092|app: 0|req: 1/1] 127.0.0.1 () {40 vars in 846 bytes} [Sat Apr 14 14:32:16 2018] GET /js/slideshow.js => generated 3169 bytes in 186 msecs (HTTP/1.1 404) 2 headers in 80 bytes (1 switches on core 0)
