@@ -87,18 +87,18 @@ class RegisterView(View):
         return redirect(reverse("users:login"))
 
     # 定义发送邮箱的方法
-    def send_active_email(self, username, email, token):
-        subject = '天天生鲜用户'  # 标题
-        message = ''  # 邮件正文（纯文本）
-        sender = settings.EMAIL_FROM  # 发件人
-        recivers = [email]  # 接受人，需要是列表
-        # 邮件正文，带html样式
-        html_message = '<h2>尊敬的%s，感谢注册天天生鲜</h2>' \
-                       '<p>请点击次链接激活你的证号' \
-                       '<a href="http://127.0.0.1:8000/users/active/%s">http://127.0.0.1:8000/users/active/%s</a>' \
-                       % (username, token, token)
-
-        send_mail(subject, message, sender, recivers, html_message=html_message)
+    # def send_active_email(self, username, email, token):
+    #     subject = '天天生鲜用户'  # 标题
+    #     message = ''  # 邮件正文（纯文本）
+    #     sender = settings.EMAIL_FROM  # 发件人
+    #     recivers = [email]  # 接受人，需要是列表
+    #     # 邮件正文，带html样式
+    #     html_message = '<h2>尊敬的%s，感谢注册天天生鲜</h2>' \
+    #                    '<p>请点击次链接激活你的证号' \
+    #                    '<a href="http://127.0.0.1:8000/users/active/%s">http://127.0.0.1:8000/users/active/%s</a>' \
+    #                    % (username, token, token)
+    #
+    #     send_mail(subject, message, sender, recivers, html_message=html_message)
 
 
 class LoginView(View):
@@ -129,9 +129,10 @@ class LoginView(View):
             return render(request, 'login.html', {'errmsg': '请先激活邮箱'})
 
         login(request, user)
-        # 通过django提供的login方法，保存登陆用户状态（底层是使用session保存数据）
+        # 通过django提供的login方法，保存登陆用户状态,登录就是要保持状态，保存在session中（底层是使用session保存数据）
         #内置方法保存用户的信息，session键值对数据
         # 用户是否勾选,set_expiry可以设置session数据的过期时间
+
         if remember != 'on':
             request.session.set_expiry(0)
 
@@ -143,17 +144,20 @@ class LoginView(View):
         if next_url is None:
             return redirect(reverse("goods:index"))
         else:
+            """从哪里来回到哪里去"""
             return redirect(next_url)
 
 
 class LogoutView(View):
     def get(self, request):
+
         logout(request)
 
         return redirect(reverse('goods:index'))
 
 
 class ActiveView(View):
+    """激活用户状态"""
     def get(self, requset, token):
         try:
             seriazer = TimedJSONWebSignatureSerializer(settings.SECRET_KEY, 3600)
@@ -282,6 +286,7 @@ class UserInfoView(LoginReqiuredMixin, View):
                 skus.append(goods)
             except GoodsSKU.DoesNotExist:
                 pass
+
         data = {
             'num': 3,
             'address': address,

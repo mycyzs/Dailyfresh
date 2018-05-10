@@ -2,6 +2,7 @@ from haystack import indexes
 
 from apps.goods.models import GoodsSKU
 
+"""创建索引，方便搜索商品"""
 
 class GoodsSKUIndex(indexes.SearchIndex, indexes.Indexable):
     # 针对那张表创建的索引

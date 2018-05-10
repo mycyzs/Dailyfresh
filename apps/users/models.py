@@ -6,7 +6,7 @@ from utils.models import BaseModel
 
 
 class User(BaseModel, AbstractUser):
-     """用户信息模型类"""
+     """用户信息模型类,AbstractUser是dajngo提供给我们的用户模型类"""
 
      class Meta:
          db_table = 'df_user'

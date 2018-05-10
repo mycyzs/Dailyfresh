@@ -61,7 +61,7 @@ HAYSTACK_CONNECTIONS = {
 
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
-# 设置全文检索结果每页显示2条数据
+# 设置全文检索结果每页显示1条数据
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1
 
 TINYMCE_DEFAULT_CONFIG = {
@@ -133,14 +133,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-
+#指定静态文件的路径
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_FILE_STORAGE = 'utils.fdfs.storage.FdfsStorage'
 
+#指定自定义的用户模型类
 AUTH_USER_MODEL = 'users.User'
 
-# todo 注册完邮箱改参数
+
 # 邮件发送配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # 导入邮件模块
 EMAIL_HOST = 'smtp.163.com'  # 发邮件主机
@@ -149,6 +150,7 @@ EMAIL_HOST_USER = 'mycyzs@163.com'  # 发件人邮件
 EMAIL_HOST_PASSWORD = 'lhf123'  # 邮箱授权时获得授权码，非注册登录密码
 EMAIL_FROM = '天天生鲜<mycyzs@163.com>'  # 邮件中的显示的发件人, 邮箱需要与发件人邮箱一致
 
+# 配置loginRequired装饰器使用, 没有登录跳转到此地址
 LOGIN_URL = '/users/login'
 
 # 配置缓存数据到redis数据库，django和redis数据库的交互
@@ -163,8 +165,9 @@ CACHES = {
     }
 }
 
+# 收集的静态文件保存到哪个目录
 STATIC_ROOT = '/home/python/Desktop/static'
 
-# session数据缓存到Redis中
+# session数据保存到Redis中
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
